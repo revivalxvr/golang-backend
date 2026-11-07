@@ -1,7 +1,7 @@
 package request
 
 type UpdateProfileRequest struct {
-	Name  *string `json:"name" validate:"omitempty,min:3"`
+	Name  *string `json:"name" validate:"omitempty,min=3"`
 	Email *string `json:"email" validate:"omitempty,email"`
 }
 
