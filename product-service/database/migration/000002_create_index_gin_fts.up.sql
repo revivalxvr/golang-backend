@@ -1,0 +1,1 @@
+CREATE INDEX gin_product_description_fts ON products USING gin(to_tsvector('indonesian', deskripsi));

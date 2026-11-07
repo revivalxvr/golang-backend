@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; background-color:#f4f8fc;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4f8fc" style="padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 12px; padding: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;">
+          <tr>
+            <td align="center" style="color: #0d6efd; font-size: 24px; font-weight: bold; margin-bottom: 20px;">
+              Kode Verifikasi OTP
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="color: #2c3e50; font-size: 16px; line-height: 1.6; text-align: center;">
+              <p>Gunakan kode di bawah ini untuk memverifikasi akun kamu di <strong>Example</strong>:</p>
+              <div style="font-size: 28px; font-weight: 700; letter-spacing: 3px; color: #0d6efd; margin: 20px 0; display: inline-block; background-color: #e9f1ff; padding: 12px 24px; border-radius: 8px;">
+                {{.Otp}}
+              </div>
+              <p>Jangan berikan kode ini kepada siapa pun.<br>Jika kamu tidak meminta kode ini, abaikan pesan ini.</p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="margin-top: 30px; font-size: 13px; color: #7a8595; text-align: center;">
+              &copy; {{.Year}} Example. Semua hak dilindungi.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

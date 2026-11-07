@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS "user_blocks" (
+    "id" SERIAL PRIMARY KEY,
+    "user_id" UUID NOT NULL,
+    "blocked_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "unblocked_at" TIMESTAMP WITH TIME ZONE,
+    "reason" TEXT NOT NULL,
+    "is_active" BOOLEAN NOT NULL DEFAULT TRUE,
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
+);

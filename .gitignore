@@ -1,0 +1,32 @@
+
+# Exclude independent protobuf repository
+/protobuf/
+/certs/
+/vault/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Go build files
+*.exe
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Sensitive files - review before committing
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Logs
+*.log

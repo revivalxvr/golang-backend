@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS "carts" (
+    "id" SERIAL PRIMARY KEY,
+    "user_id" VARCHAR(36) NOT NULL,
+    "product_id" UUID NOT NULL,
+    "quantity" INT NOT NULL,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

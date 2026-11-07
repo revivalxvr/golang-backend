@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS "gin_product_description_fts";

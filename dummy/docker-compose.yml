@@ -1,0 +1,332 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: belajar
+
+  redis:
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - "6379:6379"
+
+  redisinsight:
+    image: redislabs/redisinsight:2.50
+    ports:
+      - "5540:5540"
+    networks:
+      - redis-network
+
+  rabbitmq:
+    image: rabbitmq:4.0.5-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  redis-node-1:
+    container_name: redis-node-1
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - 5371:6379
+      - 15371:16379
+    volumes:
+      - type: bind
+        source: ./conf/redis-node-1.conf # File buatan Makefile
+        target: /usr/local/etc/redis/redis.conf # Lokasi di dalam container
+      - type: volume
+        source: redis-data-node-1
+        target: /data
+    networks:
+      redis-network:
+        ipv4_address: 172.48.0.11
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  redis-node-2:
+    container_name: redis-node-2
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - 5372:6379
+      - 15372:16379
+    volumes:
+      - type: bind
+        source: ./conf/redis-node-2.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: redis-data-node-2
+        target: /data
+    networks:
+      redis-network:
+        ipv4_address: 172.48.0.12
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  
+  redis-node-3:
+    container_name: redis-node-3
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - 5373:6379
+      - 15373:16379
+    volumes:
+      - type: bind
+        source: ./conf/redis-node-3.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: redis-data-node-3
+        target: /data
+    networks:
+      redis-network:
+        ipv4_address: 172.48.0.13
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  
+  redis-node-4:
+    container_name: redis-node-4
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - 5374:6379
+      - 15374:16379
+    volumes:
+      - type: bind
+        source: ./conf/redis-node-4.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: redis-data-node-4
+        target: /data
+    networks:
+      redis-network:
+        ipv4_address: 172.48.0.14
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  
+  redis-node-5:
+    container_name: redis-node-5
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - 5375:6379
+      - 15375:16379
+    volumes:
+      - type: bind
+        source: ./conf/redis-node-5.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: redis-data-node-5
+        target: /data
+    networks:
+      redis-network:
+        ipv4_address: 172.48.0.15
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+  redis-node-6:
+    container_name: redis-node-6
+    image: redis:7.2.7-alpine3.21
+    ports:
+      - 5376:6379
+      - 15376:16379
+    volumes:
+      - type: bind
+        source: ./conf/redis-node-6.conf
+        target: /usr/local/etc/redis/redis.conf
+      - type: volume
+        source: redis-data-node-6
+        target: /data
+    networks:
+      redis-network:
+        ipv4_address: 172.48.0.16
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+
+  kafka-1:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-1
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    volumes:
+      - kafka-data-1:/var/lib/kafka/data
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,EXTERNAL://127.0.0.1:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  kafka-2:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-2
+    ports:
+      - "9094:9094"
+      - "9095:9095"
+    volumes:
+      - kafka-data-2:/var/lib/kafka/data
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,EXTERNAL://0.0.0.0:9095
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9094,EXTERNAL://127.0.0.1:9095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  kafka-3:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-3
+    ports:
+      - "9096:9096"
+      - "9097:9097"
+    volumes:
+      - kafka-data-3:/var/lib/kafka/data
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9096,EXTERNAL://0.0.0.0:9097
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9096,EXTERNAL://127.0.0.1:9097
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:9092,kafka-2:9094,kafka-3:9096
+
+  es01:
+    image: elasticsearch:8.15.0
+    container_name: es01
+    environment:
+      - node.name=es01
+      - node.attr.data=hot
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es01-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+  es02:
+    image: elasticsearch:8.15.0
+    container_name: es02
+    environment:
+      - node.name=es02
+      - node.attr.data=warm
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es02-data:/usr/share/elasticsearch/data
+    ports:
+      - "9201:9200"
+
+  es03:
+    image: elasticsearch:8.15.0
+    container_name: es03
+    environment:
+      - node.name=es03
+      - node.attr.data=cold
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es03-data:/usr/share/elasticsearch/data
+    ports:
+      - "9202:9200"
+
+  kibana:
+    image: kibana:8.15.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=["http://es01:9200","http://es02:9200","http://es03:9200"]
+    depends_on:
+      - es01
+      - es02
+      - es03
+      
+volumes:
+  redis-data-node-1:
+    name: redis-data-node-1
+  redis-data-node-2:
+    name: redis-data-node-2
+  redis-data-node-3:
+    name: redis-data-node-3
+  redis-data-node-4:
+    name: redis-data-node-4
+  redis-data-node-5:
+    name: redis-data-node-5
+  redis-data-node-6:
+    name: redis-data-node-6
+  kafka-data-1:
+    name: kafka-data-1
+  kafka-data-2:
+    name: kafka-data-2
+  kafka-data-3:
+    name: kafka-data-3
+  zookeeper-data:
+    name: zookeeper-data
+  es01-data:
+    name: es01-data
+  es02-data:
+    name: es02-data
+  es03-data:
+    name: es03-data
+
+networks:
+  redis-network:
+    name: redis-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.48.0.0/16
+    
