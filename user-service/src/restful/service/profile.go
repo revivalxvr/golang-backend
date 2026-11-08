@@ -93,7 +93,12 @@ func (s *profileImpl) UpdateProfileAdmin(ctx context.Context, userID string, req
 	if err := s.UserRepository.Update(user); err != nil {
 		return nil, &errors.Response{Message: "failed to update profile in database", HttpCode: 500}
 	}
-
+	cacheKey := fmt.Sprintf("user:%s", userID)
+	// 4. Hapus cache user yang lama
+	if err := s.CacheRepository.Delete(ctx, cacheKey); err != nil {
+		log.Logger.Error(err.Error())
+	}
+	// 5. Return data user yang sudah diperbarui
 	return user, nil
 }
 
@@ -121,6 +126,11 @@ func (s *profileImpl) UpdateProfileUser(ctx context.Context, userID string, req 
 	// 3. Simpan perubahan melalui repository
 	if err := s.UserRepository.Update(user); err != nil {
 		return nil, &errors.Response{Message: "failed to update profile in database", HttpCode: 500}
+	}
+	cacheKey := fmt.Sprintf("user:%s", userID)
+	// 4. Hapus cache user yang lama
+	if err := s.CacheRepository.Delete(ctx, cacheKey); err != nil {
+		log.Logger.Error(err.Error())
 	}
 
 	return user, nil
