@@ -19,6 +19,7 @@ import (
 type Product interface {
 	Create(c fiber.Ctx, req *request.CreateProduct) (string, error)
 	FindMany(c fiber.Ctx, req *request.FindManyProduct) ([]*model.Product, error)
+	FindByID(c fiber.Ctx, productId string) (*model.Product, error)
 	Update(c fiber.Ctx, id string, req *request.UpdateProduct) error
 	Delete(c fiber.Ctx, id string) error
 }
@@ -156,6 +157,19 @@ func (s *productImpl) Update(c fiber.Ctx, id string, req *request.UpdateProduct)
 	}
 
 	return nil
+}
+
+// res, err := h.service.FindByID(c, productId)
+//
+//	if err != nil {
+//		return err
+//	}
+func (s *productImpl) FindByID(c fiber.Ctx, productId string) (*model.Product, error) {
+	var product model.Product
+	if err := s.productRepository.FindByID(c.Context(), productId, &product); err != nil {
+		return nil, err
+	}
+	return &product, nil
 }
 
 func (s *productImpl) FindMany(c fiber.Ctx, req *request.FindManyProduct) ([]*model.Product, error) {

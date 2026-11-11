@@ -21,6 +21,7 @@ func Product(app *fiber.App, m *middleware.Middleware, h *handler.Product) {
 	}))
 	app.Post("/api/v1/products", m.AccessToken, m.Admin, m.SaveTemporaryProductImage, m.ValidateProductImage, h.Create)
 	app.Put("/api/v1/products/:id", m.AccessToken, m.Admin, m.SaveTemporaryProductImage, m.ValidateProductImage, h.Update)
+	app.Get("/api/v1/products/:id", m.AccessToken, m.Admin, h.FindByID)
 	app.Delete("/api/v1/products/:id", m.AccessToken, m.Admin, h.Delete)
 	app.Get("/api/v1/products", h.FindMany)
 }

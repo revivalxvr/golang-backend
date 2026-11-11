@@ -63,6 +63,20 @@ func (h *Product) Update(c fiber.Ctx) error {
 		Data:    nil,
 	})
 }
+func (h *Product) FindByID(c fiber.Ctx) error {
+	productId := c.Params("id")
+
+	// Panggil service find by id
+	res, err := h.service.FindByID(c, productId)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(response.CommonResponse{
+		Message: "Get Product Success",
+		Data:    res,
+	})
+}
 func (h *Product) Delete(c fiber.Ctx) error {
 	productId := c.Params("id")
 
