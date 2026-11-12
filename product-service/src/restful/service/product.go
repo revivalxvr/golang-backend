@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 	"product-service/src/common/dto/request"
+	"product-service/src/common/dto/response"
 	"product-service/src/common/errors"
 	"product-service/src/common/model"
 	v "product-service/src/common/pkg/validator"
@@ -18,7 +19,7 @@ import (
 
 type Product interface {
 	Create(c fiber.Ctx, req *request.CreateProduct) (string, error)
-	FindMany(c fiber.Ctx, req *request.FindManyProduct) ([]*model.Product, error)
+	FindMany(c fiber.Ctx, req *request.FindManyProduct) ([]*response.ProductResponse, error)
 	FindByID(c fiber.Ctx, productId string) (*model.Product, error)
 	Update(c fiber.Ctx, id string, req *request.UpdateProduct) error
 	Delete(c fiber.Ctx, id string) error
@@ -159,11 +160,6 @@ func (s *productImpl) Update(c fiber.Ctx, id string, req *request.UpdateProduct)
 	return nil
 }
 
-// res, err := h.service.FindByID(c, productId)
-//
-//	if err != nil {
-//		return err
-//	}
 func (s *productImpl) FindByID(c fiber.Ctx, productId string) (*model.Product, error) {
 	var product model.Product
 	if err := s.productRepository.FindByID(c.Context(), productId, &product); err != nil {
@@ -172,14 +168,44 @@ func (s *productImpl) FindByID(c fiber.Ctx, productId string) (*model.Product, e
 	return &product, nil
 }
 
-func (s *productImpl) FindMany(c fiber.Ctx, req *request.FindManyProduct) ([]*model.Product, error) {
+func (s *productImpl) FindMany(c fiber.Ctx, req *request.FindManyProduct) ([]*response.ProductResponse, error) {
 	if err := v.Validate.Struct(req); err != nil {
 		return nil, err
 	}
-	res, err := s.productRepository.FindMany(c.Context(), req)
+	// Ambil data dari repository (menggunakan model database aslinya)
+	products, err := s.productRepository.FindMany(c.Context(), req)
 	if err != nil {
 		return nil, err
 	}
+
+	// Konversi ke response yang sesuai
+	// Mapping dari model DB ke response DTO
+	var res []*response.ProductResponse
+	for _, p := range products {
+		categoryName := ""
+		if p.Category != nil {
+			categoryName = p.Category.Name
+		}
+		res = append(res, &response.ProductResponse{
+			ID:         p.ID.String(),
+			Name:       p.Name,
+			Price:      p.Price,
+			Sku:        p.Sku,
+			ImageId:    p.ImageId,
+			Image:      p.Image,
+			Stock:      p.Stock,
+			CategoryID: p.CategoryID,
+			Category:   categoryName, // Hanya mengambil string namanya saja
+			Length:     p.Length,
+			Width:      p.Width,
+			Height:     p.Height,
+			Deskripsi:  p.Deskripsi,
+			Badge:      p.Badge,
+			CreatedAt:  p.CreatedAt,
+			UpdatedAt:  p.UpdatedAt,
+		})
+	}
+
 	return res, nil
 }
 func (s *productImpl) Delete(c fiber.Ctx, id string) error {
