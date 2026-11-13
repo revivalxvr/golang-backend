@@ -143,14 +143,14 @@ func (h *AuthHandler) RefreshToken(c fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:     "access_token",
 		Value:    res.AccessToken,
-		Expires:  time.Now().Add(15 * time.Minute),
+		Expires:  time.Now().Add(1 * time.Hour),
 		HTTPOnly: true,
 		Path:     "/",
 	})
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    res.RefreshToken,
-		Expires:  time.Now().Add(24 * time.Hour),
+		Expires:  time.Now().Add(7 * time.Hour),
 		HTTPOnly: true,
 		Path:     "/",
 	})
